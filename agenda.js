@@ -46,6 +46,15 @@ function horarioOcupado(consultas, nova) {
     (c) => c.data === nova.data && c.hora === nova.hora && c.profissional === nova.profissional
   );
 }
+function cancelarConsulta(indice) {
+  const consultas = carregar();
+
+  consultas.splice(indice, 1);
+
+  salvar(consultas);
+  mensagem.textContent = "Consulta cancelada.";
+  renderizar();
+}
 
 function renderizar() {
   const consultas = carregar().sort((a, b) =>
@@ -55,13 +64,32 @@ function renderizar() {
   lista.innerHTML = "";
 
   if (consultas.length === 0) {
-    lista.innerHTML = '<tr><td colspan="4" class="vazio">Nenhuma consulta agendada.</td></tr>';
+    lista.innerHTML = '<tr><td colspan="5" class="vazio">Nenhuma consulta agendada.</td></tr>';
     return;
   }
 
-  for (const c of consultas) {
+  for (let i = 0; i < consultas.length; i++) {
+    const c = consultas[i];
+
     const linha = document.createElement("tr");
-    linha.innerHTML = `<td>${c.data}</td><td>${c.hora}</td><td>${c.profissional}</td><td>${c.paciente}</td>`;
+
+    linha.innerHTML = `
+      <td>${c.data}</td>
+      <td>${c.hora}</td>
+      <td>${c.profissional}</td>
+      <td>${c.paciente}</td>
+      <td></td>
+    `;
+
+    const botaoCancelar = document.createElement("button");
+    botaoCancelar.type = "button";
+    botaoCancelar.textContent = "Cancelar";
+
+    botaoCancelar.addEventListener("click", () => {
+      cancelarConsulta(i);
+    });
+
+    linha.lastElementChild.appendChild(botaoCancelar);
     lista.appendChild(linha);
   }
 }
